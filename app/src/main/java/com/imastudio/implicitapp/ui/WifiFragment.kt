@@ -1,6 +1,8 @@
 package com.imastudio.implicitapp.ui
 
 
+import android.content.Context
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,18 +10,43 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.imastudio.implicitapp.R
+import kotlinx.android.synthetic.main.fragment_wifi.view.*
+import org.jetbrains.anko.support.v4.act
+import org.jetbrains.anko.support.v4.toast
 
 /**
  * A simple [Fragment] subclass.
  */
 class WifiFragment : Fragment() {
+    var wifimanager: WifiManager? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_browser, container, false)
+        val v = inflater.inflate(R.layout.fragment_wifi, container, false)
+        wifimanager = act.getApplicationContext().getSystemService(Context.WIFI_SERVICE)
+                as WifiManager
+        v.wifi.setChecked(status())
+        v.wifi.setOnCheckedChangeListener { compoundButton, b ->
+            wifiChangeStatus(b)
+        }
+        return v
+    }
+
+    private fun wifiChangeStatus(b: Boolean) {
+        if (b == true && !wifimanager!!.isWifiEnabled) {
+            wifimanager!!.isWifiEnabled = true
+            toast("wifi dihidupkan")
+        } else if (b == false && wifimanager!!.isWifiEnabled) {
+            wifimanager!!.isWifiEnabled = false
+            toast("wifi dimatikan")
+        }
+    }
+
+    private fun status(): Boolean {
+        return  wifimanager!!.isWifiEnabled
     }
 
 

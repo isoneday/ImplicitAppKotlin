@@ -29,6 +29,22 @@ import kotlinx.android.synthetic.main.fragment_camera.*
 import java.io.InputStream
 
 import android.R
+import android.graphics.Matrix
+import android.media.ExifInterface
+import androidx.core.app.NotificationCompat.getExtras
+import android.graphics.Bitmap
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -60,7 +76,7 @@ class CameraFragment : Fragment() {
                 file.mkdir()
             }
             val fileGambar = File(
-                destPath + "/" + namaFolder + "/PIC" + currentDate() + ".jpg"
+                destPath + "/" + namaFolder + "/VID" + currentDate() + ".jpg"
             )
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             lokasiFile = Uri.fromFile(fileGambar)
@@ -79,6 +95,9 @@ class CameraFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode== CAMERA &&resultCode==RESULT_OK){
         toast("lokasi file : ${lokasiFile.toString()}")
+
+            val photo = data?.getExtras()?.get(lokasiFile?.path) as Bitmap
+            imgshow.setImageBitmap(photo)
         }else if (requestCode== GALERY &&resultCode==RESULT_OK){
             var lokasiGambar = data?.data
             var inputStream :InputStream?=null
@@ -90,6 +109,16 @@ class CameraFragment : Fragment() {
             var bitmap = BitmapFactory.decodeStream(inputStream)
             imgshow.setImageBitmap(bitmap)
         }
+    }
+    private fun exifToDegrees(exifOrientation: Int): Int {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270
+        }
+        return 0
     }
 
 
